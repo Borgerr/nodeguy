@@ -2,30 +2,40 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	//"encoding/json"
 	"flag"
 	"fmt"
 	//"io"
 	"net/http"
+	"mime/multipart"
 )
 
-func postBody(c *gin.Context) {
+func handleFile(c *gin.Context, file *multipart.FileHeader) {
+	fmt.Println(file.Filename)
+
+	c.SaveUploadedFile(file, "./tmp_files/" + file.Filename)
+	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!\r\n", file.Filename))
+}
+
+func handleBody(c *gin.Context) {
 	id := c.Query("id")
 	page := c.DefaultQuery("page", "0")
 	name := c.PostForm("name")
 	message := c.PostForm("message")
 
-	fmt.Printf("id: %s; page: %s; name: %s; message: %s", id, page, name, message)
+	fmt.Printf("id: %s; page: %s; name: %s; message: %s\r\n", id, page, name, message)
 }
 
-func postImage(c *gin.Context) {
-	file, _ := c.FormFile("file")
-	fmt.Println(file.Filename)
+func fullPost(c *gin.Context) {
+	file, err := c.FormFile("file")
 
-	// Upload the file to a specific dst
-	// TODO: change to upload a blob to our DB
-	// may want to change depending on testing vs prod
-	c.SaveUploadedFile(file, "./tmp_files/" + file.Filename)
-	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!\r\n", file.Filename))
+	handleBody(c)
+
+	if err == nil {
+		handleFile(c, file)
+	} else {
+		c.String(http.StatusOK, "No file upload? Totally cool.\r\n")
+	}
 }
 
 func setupRouter() *gin.Engine {
@@ -33,9 +43,7 @@ func setupRouter() *gin.Engine {
 	// Set a lower memory limit for multipart forms
 	router.MaxMultipartMemory = 8 << 20		// 8 MiB
 
-	router.POST("/post", postBody)
-
-	router.POST("/upload", postImage)
+	router.POST("/post", fullPost)
 
 	return router
 }
