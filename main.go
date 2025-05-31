@@ -2,28 +2,35 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	//"encoding/json"
 	"flag"
 	"fmt"
-	//"io"
 	"net/http"
 	"mime/multipart"
+	"log"
 )
 
+// TODO: do we want to support more than just JSON?
+// TODO: want to add some field for responding in some thread vs starting a new thread
+// OR potentially add two different endpoints depending on this
+type PostBody struct {
+	Name string `json:"name"`
+	Body string `json:"body"`
+}
+
 func handleFile(c *gin.Context, file *multipart.FileHeader) {
-	fmt.Println(file.Filename)
+	log.Println(file.Filename)
 
 	c.SaveUploadedFile(file, "./tmp_files/" + file.Filename)
 	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!\r\n", file.Filename))
 }
 
 func handleBody(c *gin.Context) {
-	id := c.Query("id")
-	page := c.DefaultQuery("page", "0")
-	name := c.PostForm("name")
-	message := c.PostForm("message")
-
-	fmt.Printf("id: %s; page: %s; name: %s; message: %s\r\n", id, page, name, message)
+	var postbody PostBody
+	if c.BindJSON(&postbody) == nil {
+		log.Println(postbody.Name)
+		log.Println(postbody.Body)
+		c.String(http.StatusOK, "bound by JSON!")
+	}
 }
 
 func fullPost(c *gin.Context) {
@@ -32,8 +39,10 @@ func fullPost(c *gin.Context) {
 	handleBody(c)
 
 	if err == nil {
+		log.Println("handling file...")
 		handleFile(c, file)
 	} else {
+		log.Println("not handling file")
 		c.String(http.StatusOK, "No file upload? Totally cool.\r\n")
 	}
 }
