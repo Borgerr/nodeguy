@@ -77,15 +77,64 @@ func fullPost(c *gin.Context) {
 	}
 }
 
+// --------------
+// creating posts
+// --------------
+// probably double check multipart/form-data from https://stackoverflow.com/questions/1443158/binary-data-in-json-string-something-better-than-base64
+
+// @Summary post a new thread
+// @Schemes
+// @Description Create a new thread in a board for others to reply to.
+// @Success 200
+// @Router /*board/new-thread [post]
+func newThread(c *gin.Context) {
+	file, err := c.FormFile("file")
+	// TODO: check filetype
+	// (https://pkg.go.dev/github.com/h2non/filetype#section-readme maybe?)
+	if err != nil {
+		c.String(http.StatusBadRequest, "No file upload.")
+	}
+	// -------------------
+	// DB INTERACTION HERE
+	// -------------------
+	log.Println(fmt.Sprintf("storing file %s", file.Filename))
+
+	c.String(http.StatusOK, "0")	// TODO: return thread ID
+}
+
+// @Summary reply to a thread
+// @Schemes
+// Decription Reply to an existing thread in a board.
+// @Success 200
+// @Router /*board/*threadID/reply [post]
+func replyToThread(c *gin.Context) {
+	file, err := c.FormFile("file")
+	if err != nil {
+		// -------------------
+		// DB INTERACTION HERE
+		// -------------------
+		log.Println(fmt.Sprintf("storing file %s", file.Filename))
+	} else {
+		log.Println("not storing a file")
+	}
+
+	// -------------------
+	// DB INTERACTION HERE
+	// -------------------
+	c. String(http.StatusOK, "1")	// TODO: return reply ID
+}
+
 func setupRouter(url string) *gin.Engine {
 	r := gin.Default()
 	// Set a lower memory limit for multipart forms
 	r.MaxMultipartMemory = 8 << 20 // 8 MiB
+	// TODO: check if we can just set the accepted filetypes here
 
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	v1 := r.Group("/api/v1")
 	{
 		eg := v1.Group("/")
+		// TODO: probably want to add an easy way to separate based on boards in some config file
 		{
 			eg.POST("/post", fullPost)
 		}
