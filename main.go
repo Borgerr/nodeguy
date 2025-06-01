@@ -14,25 +14,25 @@ import (
 	"github.com/Borgerr/nodeguy/docs"
 )
 
-// @title           nodeguy
-// @version         0.1
-// @description     Backend API for a forum website.
-// @termsOfService  http://swagger.io/terms/
+//	@title			nodeguy
+//	@version		0.1
+//	@description	Backend API for a forum website.
+//	@termsOfService	http://swagger.io/terms/
 
-// @contact.name   API Support
-// @contact.url    http://www.swagger.io/support
-// @contact.email  support@swagger.io
+//	@contact.name	API Support
+//	@contact.url	http://www.swagger.io/support
+//	@contact.email	support@swagger.io
 
-// @license.name  Apache 2.0
-// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+//	@license.name	Apache 2.0
+//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host      localhost:8080
-// @BasePath  /api/v1
+//	@host		localhost:8080
+//	@BasePath	/api/v1
 
-// @securityDefinitions.basic  BasicAuth
+//	@securityDefinitions.basic	BasicAuth
 
-// @externalDocs.description  OpenAPI
-// @externalDocs.url          https://swagger.io/resources/open-api/
+//	@externalDocs.description	OpenAPI
+//	@externalDocs.url			https://swagger.io/resources/open-api/
 
 // TODO: do we want to support more than just JSON?
 // TODO: want to add some field for responding in some thread vs starting a new thread
@@ -58,11 +58,11 @@ func handleBody(c *gin.Context) {
 	}
 }
 
-// @Summary full post
-// @Schemes
-// @Description makes a post
-// @Success 200
-// @Router /post [post]
+//	@Summary	full post
+//	@Schemes
+//	@Description	makes a post
+//	@Success		200
+//	@Router			/post [post]
 func fullPost(c *gin.Context) {
 	file, err := c.FormFile("file")
 
@@ -82,11 +82,11 @@ func fullPost(c *gin.Context) {
 // --------------
 // probably double check multipart/form-data from https://stackoverflow.com/questions/1443158/binary-data-in-json-string-something-better-than-base64
 
-// @Summary post a new thread
-// @Schemes
-// @Description Create a new thread in a board for others to reply to.
-// @Success 200
-// @Router /*board/new-thread [post]
+//	@Summary	post a new thread
+//	@Schemes
+//	@Description	Create a new thread in a board for others to reply to.
+//	@Success		200
+//	@Router			/:board/new-thread [post]
 func newThread(c *gin.Context) {
 	file, err := c.FormFile("file")
 	// TODO: check filetype
@@ -102,12 +102,26 @@ func newThread(c *gin.Context) {
 	c.String(http.StatusOK, "0")	// TODO: return thread ID
 }
 
-// @Summary reply to a thread
-// @Schemes
+type ReplyUri struct {
+	Board	 string `uri:"board" binding:"required"`
+	ThreadID string `uri:"threadID"`
+}
+
+//	@Summary	reply to a thread
+//	@Schemes
 // Decription Reply to an existing thread in a board.
-// @Success 200
-// @Router /*board/*threadID/reply [post]
+//	@Success	200
+//	@Router		/:board/:threadID/reply [post]
 func replyToThread(c *gin.Context) {
+	var replyUri ReplyUri
+	if err := c.ShouldBindUri(&replyUri); err != nil {
+		c.JSON(400, gin.H{"msg": err.Error()})
+	} else {
+		c.JSON(http.StatusOK,
+			gin.H{"board": replyUri.Board, "threadID": replyUri.ThreadID})
+	}
+	return
+
 	file, err := c.FormFile("file")
 	if err != nil {
 		// -------------------
@@ -121,7 +135,7 @@ func replyToThread(c *gin.Context) {
 	// -------------------
 	// DB INTERACTION HERE
 	// -------------------
-	c. String(http.StatusOK, "1")	// TODO: return reply ID
+	c.String(http.StatusOK, "1")	// TODO: return reply ID
 }
 
 func setupRouter(url string) *gin.Engine {
@@ -135,8 +149,11 @@ func setupRouter(url string) *gin.Engine {
 	{
 		eg := v1.Group("/")
 		// TODO: probably want to add an easy way to separate based on boards in some config file
+		// very likely to be irrelevant to this block, though. Maybe just some script tool.
 		{
-			eg.POST("/post", fullPost)
+			//eg.POST("/post", fullPost)
+			eg.POST("/:board/new-thread", newThread)
+			eg.POST("/:board/:threadID/reply", replyToThread)
 		}
 	}
 

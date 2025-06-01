@@ -8,14 +8,27 @@ info:
     email: support@swagger.io
     name: API Support
     url: http://www.swagger.io/support
-  description: h
+  description: Backend API for a forum website.
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
-  title: Swagger Example API
-  version: "1.0"
+  title: nodeguy
+  version: "0.1"
 paths:
+  /:board/:threadID/reply:
+    post:
+      responses:
+        "200":
+          description: OK
+      summary: reply to a thread
+  /:board/new-thread:
+    post:
+      description: Create a new thread in a board for others to reply to.
+      responses:
+        "200":
+          description: OK
+      summary: post a new thread
   /post:
     post:
       description: makes a post

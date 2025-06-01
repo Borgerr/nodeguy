@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "h",
-        "title": "Swagger Example API",
+        "description": "Backend API for a forum website.",
+        "title": "nodeguy",
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
             "name": "API Support",
@@ -13,11 +13,32 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "1.0"
+        "version": "0.1"
     },
     "host": "localhost:8080",
     "basePath": "/api/v1",
     "paths": {
+        "/:board/:threadID/reply": {
+            "post": {
+                "summary": "reply to a thread",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/:board/new-thread": {
+            "post": {
+                "description": "Create a new thread in a board for others to reply to.",
+                "summary": "post a new thread",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/post": {
             "post": {
                 "description": "makes a post",
