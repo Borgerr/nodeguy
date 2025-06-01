@@ -104,7 +104,7 @@ func newThread(c *gin.Context) {
 
 type ReplyUri struct {
 	Board	 string `uri:"board" binding:"required"`
-	ThreadID string `uri:"threadID"`
+	ThreadID string `uri:"threadID" binding:"required"`
 }
 
 //	@Summary	reply to a thread
