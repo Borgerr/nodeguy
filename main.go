@@ -152,6 +152,7 @@ func setupRouter(url string) *gin.Engine {
 		// very likely to be irrelevant to this block, though. Maybe just some script tool.
 		{
 			//eg.POST("/post", fullPost)
+			// TODO: problem here with URI binding. Need to determine some other way of resolving this tomorrow.
 			eg.POST("/:board/new-thread", newThread)
 			eg.POST("/:board/:threadID/reply", replyToThread)
 		}
