@@ -82,12 +82,24 @@ func fullPost(c *gin.Context) {
 // --------------
 // probably double check multipart/form-data from https://stackoverflow.com/questions/1443158/binary-data-in-json-string-something-better-than-base64
 
+type NewThreadUri struct {
+	Board	 string `uri:"board" binding:"required"`
+}
 //	@Summary	post a new thread
 //	@Schemes
 //	@Description	Create a new thread in a board for others to reply to.
 //	@Success		200
 //	@Router			/:board/new-thread [post]
 func newThread(c *gin.Context) {
+	var newThreadUri NewThreadUri
+	if err := c.ShouldBindUri(&newThreadUri); err != nil {
+		c.JSON(400, gin.H{"msg": err.Error()})
+	} else {
+		c.JSON(http.StatusOK,
+		gin.H{"board": newThreadUri.Board})
+	}
+	return
+
 	file, err := c.FormFile("file")
 	// TODO: check filetype
 	// (https://pkg.go.dev/github.com/h2non/filetype#section-readme maybe?)
@@ -106,7 +118,6 @@ type ReplyUri struct {
 	Board	 string `uri:"board" binding:"required"`
 	ThreadID string `uri:"threadID" binding:"required"`
 }
-
 //	@Summary	reply to a thread
 //	@Schemes
 // Decription Reply to an existing thread in a board.
@@ -144,18 +155,15 @@ func setupRouter(url string) *gin.Engine {
 	r.MaxMultipartMemory = 8 << 20 // 8 MiB
 	// TODO: check if we can just set the accepted filetypes here
 
-	docs.SwaggerInfo.BasePath = "/api/v1"
-	v1 := r.Group("/api/v1")
+	docs.SwaggerInfo.BasePath = "/"
+	api := r.Group("/")
+	// TODO: probably want to add an easy way to separate based on boards in some config file
+	// very likely to be irrelevant to this block, though. Maybe just some script tool.
 	{
-		eg := v1.Group("/")
-		// TODO: probably want to add an easy way to separate based on boards in some config file
-		// very likely to be irrelevant to this block, though. Maybe just some script tool.
-		{
-			//eg.POST("/post", fullPost)
-			// TODO: problem here with URI binding. Need to determine some other way of resolving this tomorrow.
-			eg.POST("/:board/new-thread", newThread)
-			eg.POST("/:board/:threadID/reply", replyToThread)
-		}
+		//eg.POST("/post", fullPost)
+		// TODO: problem here with URI binding. Need to determine some other way of resolving this tomorrow.
+		api.POST("/:board/new-thread", newThread)
+		api.POST("/:board/:threadID/reply", replyToThread)
 	}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
