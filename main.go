@@ -1,59 +1,80 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	//"encoding/json"
 	"flag"
 	"fmt"
-	//"io"
-	"net/http"
-	"mime/multipart"
+
+	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+
+	"github.com/Borgerr/nodeguy/docs"
 )
 
-func handleFile(c *gin.Context, file *multipart.FileHeader) {
-	fmt.Println(file.Filename)
+//	@title			nodeguy
+//	@version		0.1
+//	@description	Backend API for a forum website.
+//	@termsOfService	http://swagger.io/terms/
 
-	c.SaveUploadedFile(file, "./tmp_files/" + file.Filename)
-	c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!\r\n", file.Filename))
-}
+//	@contact.name	API Support
+//	@contact.url	http://www.swagger.io/support
+//	@contact.email	support@swagger.io
 
-func handleBody(c *gin.Context) {
-	id := c.Query("id")
-	page := c.DefaultQuery("page", "0")
-	name := c.PostForm("name")
-	message := c.PostForm("message")
+//	@license.name	Apache 2.0
+//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
-	fmt.Printf("id: %s; page: %s; name: %s; message: %s\r\n", id, page, name, message)
-}
+//	@host		localhost:8080
+//	@BasePath	/api/v1
 
-func fullPost(c *gin.Context) {
-	file, err := c.FormFile("file")
+//	@securityDefinitions.basic	BasicAuth
 
-	handleBody(c)
+//	@externalDocs.description	OpenAPI
+//	@externalDocs.url			https://swagger.io/resources/open-api/
 
-	if err == nil {
-		handleFile(c, file)
-	} else {
-		c.String(http.StatusOK, "No file upload? Totally cool.\r\n")
-	}
-}
-
-func setupRouter() *gin.Engine {
-	router := gin.Default()
+func setupRouter(url string) *gin.Engine {
+	r := gin.Default()
 	// Set a lower memory limit for multipart forms
-	router.MaxMultipartMemory = 8 << 20		// 8 MiB
+	r.MaxMultipartMemory = 8 << 20 // 8 MiB
+	// TODO: check if we can just set the accepted filetypes here
 
-	router.POST("/post", fullPost)
+	docs.SwaggerInfo.BasePath = "/"
+	api := r.Group("/")
+	// TODO: probably want to add an easy way to separate based on boards in some config file
+	// very likely to be irrelevant to this block, though. Maybe just some script tool.
+	{
+		//eg.POST("/post", fullPost)
+		// TODO: problem here with URI binding. Need to determine some other way of resolving this tomorrow.
+		api.POST("/:board/new-thread", newThread)
+		api.POST("/:board/:threadID/reply", replyToThread)
+		api.GET("/:board/:threadID/get-thread", getThread) // NOTE: couldn't get this to work without a little constant URI field at the end
+		api.GET("/:board/get-threads", getActiveThreads)
 
-	return router
+		// TODO: give DELETE methods some configuration options
+		api.DELETE("/:board/:threadID/delete-thread", deleteThread)
+		api.DELETE("/:board/:threadID/:replyID/delete-reply", deleteReply)
+
+		// TODO: same treatment as deletion.
+		api.PUT("/:board/:threadID/edit-thread", editThread)
+		api.PUT("/:board/:threadID/:replyID/edit-reply", editReply)
+	}
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	// TODO: determine what this is used for, docs make it seem important
+	/*
+		ginSwagger.WrapHandler(swaggerFiles.Handler,
+			ginSwagger.URL(url),
+			ginSwagger.DefaultModelsExpandDepth(-1))
+	*/
+
+	return r
 }
 
 func main() {
-	wordPtr := flag.String("port", "8080", "open port for API")
+	hostPtr := flag.String("host", "localhost", "host for API")
+	portPtr := flag.String("port", "8080", "open port for API")
 	flag.Parse()
 
-	router := setupRouter()
+	router := setupRouter(fmt.Sprintf("http://%s:%s/swagger/doc.json", *hostPtr, *portPtr))
 
-	router.Run(fmt.Sprintf(":%s", *wordPtr))
+	router.Run(fmt.Sprintf(":%s", *portPtr))
 }
-
