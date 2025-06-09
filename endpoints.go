@@ -45,22 +45,22 @@ func newThread(c *gin.Context) {
 	c.String(http.StatusOK, "0")	// TODO: return thread ID
 }
 
-type ReplyUri struct {
+type BoardThreadUri struct {
 	Board	 string `uri:"board" binding:"required"`
 	ThreadID string `uri:"threadID" binding:"required"`
 }
 //	@Summary	reply to a thread
 //	@Schemes
-// Decription Reply to an existing thread in a board.
+// @Decription Reply to an existing thread in a board.
 //	@Success	200
 //	@Router		/:board/:threadID/reply [post]
 func replyToThread(c *gin.Context) {
-	var replyUri ReplyUri
-	if err := c.ShouldBindUri(&replyUri); err != nil {
+	var boardThreadUri BoardThreadUri
+	if err := c.ShouldBindUri(&boardThreadUri); err != nil {
 		c.JSON(400, gin.H{"msg": err.Error()})
 	} else {
 		c.JSON(http.StatusOK,
-			gin.H{"board": replyUri.Board, "threadID": replyUri.ThreadID})
+			gin.H{"board": boardThreadUri.Board, "threadID": boardThreadUri.ThreadID})
 	}
 	return
 
@@ -79,3 +79,24 @@ func replyToThread(c *gin.Context) {
 	// -------------------
 	c.String(http.StatusOK, "1")	// TODO: return reply ID
 }
+
+// @Summary get thread contents
+// @Schemes
+// @Description Get thread and replies in specified board with corresponding ID.
+// @Success 200
+// @Router /:board/:threadID [get]
+func getThread(c *gin.Context) {
+	var boardThreadUri BoardThreadUri
+	if err := c.ShouldBindUri(&boardThreadUri); err != nil {
+		c.JSON(400, gin.H{"msg": err.Error()})
+	} else {
+		c.JSON(http.StatusOK,
+			gin.H{"board": boardThreadUri.Board, "threadID": boardThreadUri.ThreadID})
+	}
+	return
+
+	// -------------------
+	// DB INTERACTION HERE
+	// -------------------
+}
+
