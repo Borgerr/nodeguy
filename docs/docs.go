@@ -46,6 +46,17 @@ const docTemplate = `{
                 }
             }
         },
+        "/:board/:threadID/edit-thread": {
+            "put": {
+                "description": "Given the ID and board of a thread, attempt to edit a thread. May be accepted or denied depending on admin's configuration.",
+                "summary": "Edit thread with ID in board",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/:board/:threadID/reply": {
             "post": {
                 "summary": "reply to a thread",
@@ -60,6 +71,17 @@ const docTemplate = `{
             "delete": {
                 "description": "Given the ID and board of a thread, as well as the ID of a reply, attempt to delete a reply. May be accepted or denied depending on admin's configuration.",
                 "summary": "Delete reply with ID in thread with ID in board",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/:board/:threadID/replyID/edit-reply": {
+            "put": {
+                "description": "Given the ID and board of a thread, as well as the ID of a reply, attempt to edit a reply. May be accepted or denied depending on admin's configuration.",
+                "summary": "Edit reply with ID in thread with ID in board",
                 "responses": {
                     "200": {
                         "description": "OK"

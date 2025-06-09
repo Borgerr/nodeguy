@@ -31,6 +31,14 @@ paths:
         "200":
           description: OK
       summary: Delete thread with ID in board
+  /:board/:threadID/edit-thread:
+    put:
+      description: Given the ID and board of a thread, attempt to edit a thread. May
+        be accepted or denied depending on admin's configuration.
+      responses:
+        "200":
+          description: OK
+      summary: Edit thread with ID in board
   /:board/:threadID/reply:
     post:
       responses:
@@ -46,6 +54,14 @@ paths:
         "200":
           description: OK
       summary: Delete reply with ID in thread with ID in board
+  /:board/:threadID/replyID/edit-reply:
+    put:
+      description: Given the ID and board of a thread, as well as the ID of a reply,
+        attempt to edit a reply. May be accepted or denied depending on admin's configuration.
+      responses:
+        "200":
+          description: OK
+      summary: Edit reply with ID in thread with ID in board
   /:board/get-threads:
     get:
       description: Gets the IDs of active threads in a board, depending on configuration
