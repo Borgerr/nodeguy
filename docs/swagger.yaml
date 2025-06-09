@@ -16,12 +16,27 @@ info:
   title: nodeguy
   version: "0.1"
 paths:
+  /:board/:threadID:
+    get:
+      description: Get thread and replies in specified board with corresponding ID.
+      responses:
+        "200":
+          description: OK
+      summary: get thread contents
   /:board/:threadID/reply:
     post:
       responses:
         "200":
           description: OK
       summary: reply to a thread
+  /:board/get-threads:
+    get:
+      description: Gets the IDs of active threads in a board, depending on configuration
+        of what constitutes an "active thread".
+      responses:
+        "200":
+          description: OK
+      summary: get IDs of active threads
   /:board/new-thread:
     post:
       description: Create a new thread in a board for others to reply to.
@@ -29,13 +44,6 @@ paths:
         "200":
           description: OK
       summary: post a new thread
-  /post:
-    post:
-      description: makes a post
-      responses:
-        "200":
-          description: OK
-      summary: full post
 securityDefinitions:
   BasicAuth:
     type: basic

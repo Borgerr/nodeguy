@@ -51,7 +51,7 @@ type BoardThreadUri struct {
 }
 //	@Summary	reply to a thread
 //	@Schemes
-// @Decription Reply to an existing thread in a board.
+//	@Decription	Reply to an existing thread in a board.
 //	@Success	200
 //	@Router		/:board/:threadID/reply [post]
 func replyToThread(c *gin.Context) {
@@ -80,11 +80,11 @@ func replyToThread(c *gin.Context) {
 	c.String(http.StatusOK, "1")	// TODO: return reply ID
 }
 
-// @Summary get thread contents
-// @Schemes
-// @Description Get thread and replies in specified board with corresponding ID.
-// @Success 200
-// @Router /:board/:threadID [get]
+//	@Summary	get thread contents
+//	@Schemes
+//	@Description	Get thread and replies in specified board with corresponding ID.
+//	@Success		200
+//	@Router			/:board/:threadID [get]
 func getThread(c *gin.Context) {
 	var boardThreadUri BoardThreadUri
 	if err := c.ShouldBindUri(&boardThreadUri); err != nil {
@@ -100,11 +100,11 @@ func getThread(c *gin.Context) {
 	// -------------------
 }
 
-// @Summary get IDs of active threads
-// @Schemes
-// @Description Gets the IDs of active threads in a board, depending on configuration of what constitutes an "active thread".
-// @Success 200
-// @Router /:board/get-threads [get]
+//	@Summary	get IDs of active threads
+//	@Schemes
+//	@Description	Gets the IDs of active threads in a board, depending on configuration of what constitutes an "active thread".
+//	@Success		200
+//	@Router			/:board/get-threads [get]
 func getActiveThreads(c *gin.Context) {
 	var boardUri BoardUri
 	if err := c.ShouldBindUri(&boardUri); err != nil {

@@ -24,9 +24,31 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/:board/:threadID": {
+            "get": {
+                "description": "Get thread and replies in specified board with corresponding ID.",
+                "summary": "get thread contents",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/:board/:threadID/reply": {
             "post": {
                 "summary": "reply to a thread",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/:board/get-threads": {
+            "get": {
+                "description": "Gets the IDs of active threads in a board, depending on configuration of what constitutes an \"active thread\".",
+                "summary": "get IDs of active threads",
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -38,17 +60,6 @@ const docTemplate = `{
             "post": {
                 "description": "Create a new thread in a board for others to reply to.",
                 "summary": "post a new thread",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/post": {
-            "post": {
-                "description": "makes a post",
-                "summary": "full post",
                 "responses": {
                     "200": {
                         "description": "OK"
