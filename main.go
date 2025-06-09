@@ -52,6 +52,10 @@ func setupRouter(url string) *gin.Engine {
 		// TODO: give DELETE methods some configuration options
 		api.DELETE("/:board/:threadID/delete-thread", deleteThread)
 		api.DELETE("/:board/:threadID/:replyID/delete-reply", deleteReply)
+
+		// TODO: same treatment as deletion.
+		api.PUT("/:board/:threadID/edit-thread", editThread)
+		api.PUT("/:board/:threadID/:replyID/edit-reply", editReply)
 	}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

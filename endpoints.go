@@ -184,3 +184,40 @@ func deleteReply(c *gin.Context) {
 	}
 	return
 }
+
+// @Summary	Edit thread with ID in board
+// @Schemes
+// @Description	Given the ID and board of a thread, attempt to edit a thread. May be accepted or denied depending on admin's configuration.
+// @Success		200
+// @Router			/:board/:threadID/edit-thread [put]
+func editThread(c *gin.Context) {
+	var ThreadUri ThreadIdentifier
+	if err := c.ShouldBindUri(&ThreadUri); err != nil {
+		c.JSON(400, gin.H{"msg": err.Error()})
+	} else {
+		c.JSON(http.StatusOK,
+			gin.H{"board": ThreadUri.Board,
+				"threadID":        ThreadUri.ThreadID,
+				"edit-status": "Denied"}) // TODO: see note above
+	}
+	return
+}
+
+// @Summary	Edit reply with ID in thread with ID in board
+// @Schemes
+// @Description	Given the ID and board of a thread, as well as the ID of a reply, attempt to edit a reply. May be accepted or denied depending on admin's configuration.
+// @Success		200
+// @Router			/:board/:threadID/replyID/edit-reply [put]
+func editReply(c *gin.Context) {
+	var replyUri ReplyIdentifier
+	if err := c.ShouldBindUri(&replyUri); err != nil {
+		c.JSON(400, gin.H{"msg": err.Error()})
+	} else {
+		c.JSON(http.StatusOK,
+			gin.H{"board": replyUri.Board,
+				"threadID":        replyUri.ThreadID,
+				"replyID":         replyUri.ReplyID,
+				"edit-status": "Denied"}) // TODO: see note above
+	}
+	return
+}
