@@ -13,7 +13,7 @@ import (
 // --------------
 // probably double check multipart/form-data from https://stackoverflow.com/questions/1443158/binary-data-in-json-string-something-better-than-base64
 
-type NewThreadUri struct {
+type BoardUri struct {
 	Board	 string `uri:"board" binding:"required"`
 }
 //	@Summary	post a new thread
@@ -22,12 +22,12 @@ type NewThreadUri struct {
 //	@Success		200
 //	@Router			/:board/new-thread [post]
 func newThread(c *gin.Context) {
-	var newThreadUri NewThreadUri
-	if err := c.ShouldBindUri(&newThreadUri); err != nil {
+	var boardUri BoardUri
+	if err := c.ShouldBindUri(&boardUri); err != nil {
 		c.JSON(400, gin.H{"msg": err.Error()})
 	} else {
 		c.JSON(http.StatusOK,
-		gin.H{"board": newThreadUri.Board})
+		gin.H{"board": boardUri.Board})
 	}
 	return
 
@@ -92,6 +92,26 @@ func getThread(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK,
 			gin.H{"board": boardThreadUri.Board, "threadID": boardThreadUri.ThreadID})
+	}
+	return
+
+	// -------------------
+	// DB INTERACTION HERE
+	// -------------------
+}
+
+// @Summary get IDs of active threads
+// @Schemes
+// @Description Gets the IDs of active threads in a board, depending on configuration of what constitutes an "active thread".
+// @Success 200
+// @Router /:board/get-threads [get]
+func getActiveThreads(c *gin.Context) {
+	var boardUri BoardUri
+	if err := c.ShouldBindUri(&boardUri); err != nil {
+		c.JSON(400, gin.H{"msg": err.Error()})
+	} else {
+		c.JSON(http.StatusOK,
+		gin.H{"board": boardUri.Board})
 	}
 	return
 

@@ -48,6 +48,7 @@ func setupRouter(url string) *gin.Engine {
 		api.POST("/:board/new-thread", newThread)
 		api.POST("/:board/:threadID/reply", replyToThread)
 		api.GET("/:board/:threadID/get-thread", getThread)	// NOTE: couldn't get this to work without a little constant URI field at the end
+		api.GET("/:board/get-threads", getActiveThreads)
 	}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
