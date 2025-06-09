@@ -23,12 +23,29 @@ paths:
         "200":
           description: OK
       summary: get thread contents
+  /:board/:threadID/delete-thread:
+    delete:
+      description: Given the ID and board of a thread, attempt to delete a thread.
+        May be accepted or denied depending on admin's configuration.
+      responses:
+        "200":
+          description: OK
+      summary: Delete thread with ID in board
   /:board/:threadID/reply:
     post:
       responses:
         "200":
           description: OK
       summary: reply to a thread
+  /:board/:threadID/replyID/delete-reply:
+    delete:
+      description: Given the ID and board of a thread, as well as the ID of a reply,
+        attempt to delete a reply. May be accepted or denied depending on admin's
+        configuration.
+      responses:
+        "200":
+          description: OK
+      summary: Delete reply with ID in thread with ID in board
   /:board/get-threads:
     get:
       description: Gets the IDs of active threads in a board, depending on configuration

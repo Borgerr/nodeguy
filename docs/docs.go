@@ -35,9 +35,31 @@ const docTemplate = `{
                 }
             }
         },
+        "/:board/:threadID/delete-thread": {
+            "delete": {
+                "description": "Given the ID and board of a thread, attempt to delete a thread. May be accepted or denied depending on admin's configuration.",
+                "summary": "Delete thread with ID in board",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/:board/:threadID/reply": {
             "post": {
                 "summary": "reply to a thread",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/:board/:threadID/replyID/delete-reply": {
+            "delete": {
+                "description": "Given the ID and board of a thread, as well as the ID of a reply, attempt to delete a reply. May be accepted or denied depending on admin's configuration.",
+                "summary": "Delete reply with ID in thread with ID in board",
                 "responses": {
                     "200": {
                         "description": "OK"
