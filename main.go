@@ -49,6 +49,31 @@ func setupRouter(url string) *gin.Engine {
 		api.POST("/:board/:threadID/reply", replyToThread)
 		api.GET("/:board/:threadID/get-thread", getThread)	// NOTE: couldn't get this to work without a little constant URI field at the end
 		api.GET("/:board/get-threads", getActiveThreads)
+
+		// TODO:
+		// right now we want people to have their digital footprint be "permanent"
+		// for comical, embarrassing reasons.
+		// People will need to live with what they say on our forum.
+		// At some point, I'd like to get some configuration options
+		// for a "deletion scheme", or some function implemented
+		// that some goroutine drives and wakes back up to execute.
+		// 
+		// Essentially: Say we had some function with pseudo-code:
+		// ```
+		// func deleteOld() {
+		//   for thread in threadDB:
+		//     if thread older than 1 day:
+		//     delete thread
+		// }
+		// ```
+		// We then would use some sort of branching depending on a flag or field
+		// in a local config.json file, pointing towards that,
+		// or towards something else.
+		// We give the backend administrator different options depending on how
+		// they would like to deploy this project.
+		// 
+		// For now, though, as I said, forum users will need to live with their
+		// embarrassing degeneracy.
 	}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
